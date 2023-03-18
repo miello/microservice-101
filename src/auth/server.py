@@ -16,6 +16,17 @@ server.config["MYSQL_DB"] = os.environ.get("MYSQL_DB")
 server.config["MYSQL_PORT"] = os.environ.get("MYSQL_PORT")
 
 
+def createJWT(username, secret, authz):
+    payload = {
+        "username": username,
+        "admin": authz,
+        "iat": datetime.datetime.utcnow(),
+        "exp": datetime.datetime.utcnow() + datetime.timedelta(days=1),
+    }
+
+    return jwt.encode(payload, secret, algorithm="HS256")
+
+
 @server.route("/login", methods=["POST"])
 def login():
     auth = request.authorization
@@ -40,12 +51,25 @@ def login():
     return "invalid credentials", 401
 
 
-def createJWT(username, secret, authz):
-    payload = {
-        "username": username,
-        "admin": authz,
-        "iat": datetime.datetime.utcnow(),
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(days=1),
-    }
+@server.route("/validate", method=["POST"])
+def validate():
+    encoded_jwt = request.headers["Authorization"]
 
-    return jwt.encode(payload, secret, algorithm="HS256")
+    if not encoded_jwt:
+        return "missing credentials", 401
+
+    encoded_jwt = encoded_jwt.split(" ")[1]
+
+    try:
+        decoded_jwt = jwt.decode(
+            encoded_jwt, os.environ.get("JWT_SECRET"), algorithms=["HS256"]
+        )
+    except:
+        return "Not authorized", 403
+
+    return decoded_jwt, 200
+
+
+if __name__ == "__main__":
+    # Listen on localhost and other IP address
+    server.run(host="0.0.0.0", port=5000, debug=True)
