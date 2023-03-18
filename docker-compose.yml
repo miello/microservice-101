@@ -1,0 +1,14 @@
+services:
+  mysql:
+    image: mysql
+    container_name: mysql_microservice
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: microservice
+      MYSQL_USER: microservice
+      MYSQL_PASSWORD: microservice
+    ports:
+      - "9999:3306"
+    volumes:
+      - ./mysql:/var/lib/mysql
