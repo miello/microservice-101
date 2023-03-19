@@ -1,38 +1,34 @@
-# Configuration for kubernetes cluster
-# We calls these Object
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth
+  name: gateway
   labels:
-    app: auth
-
-# This is intended state of object "Deployment"
+    app: gateway
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: auth
+      app: gateway
+
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 3
+  
   template:
     metadata:
       labels:
-        app: auth
+        app: gateway
     spec:
-      containers: 
-        - name: auth
-          image: partearth/ms-auth
+      containers:
+        - name: gateway
+          image: partearth/ms-gateway
           resources:
             limits:
               memory: 512Mi
               cpu: "1"
-          ports:
-            - containerPort: 5000
           envFrom:
             - configMapRef:
-                name: auth-configmap
+                name: gateway-configmap
             - secretRef:
-                name: auth-secret
+                name: gateway-secret
