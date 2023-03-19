@@ -1,5 +1,8 @@
 import pika, json
 from gridfs import GridFS
+
+# RabbitMQ uses competing consumers pattern to distribute messages to workers
+# which round robin the messages to the workers
 from pika.spec import PERSISTENT_DELIVERY_MODE
 
 
