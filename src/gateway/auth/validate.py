@@ -3,7 +3,7 @@ from flask import Request
 
 
 def token(request: Request):
-    if not "Authorization" in request:
+    if not "Authorization" in request.headers:
         return None, ("missing credentials", 401)
 
     token = request.headers["Authorization"]

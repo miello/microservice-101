@@ -23,10 +23,6 @@ spec:
       containers:
         - name: gateway
           image: partearth/ms-gateway
-          resources:
-            limits:
-              memory: 512Mi
-              cpu: "1"
           envFrom:
             - configMapRef:
                 name: gateway-configmap

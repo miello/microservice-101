@@ -6,7 +6,7 @@ from auth_svc import access
 from storage import util
 
 server = Flask(__name__)
-server.config["MONGO_URI"] = "mongodb://host.minikube.internal:27017/videos"
+server.config["MONGO_URI"] = os.environ.get("MONGO_URI")
 
 mongo = PyMongo(server)
 
@@ -29,23 +29,28 @@ def login():
 
 @server.route("/upload", methods=["POST"])
 def upload():
-    access, err = validate.token(request)
+    try:
+        access, err = validate.token(request)
 
-    access = json.loads(access)
+        access = json.loads(access)
 
-    if access["admin"]:
-        if len(request.files) > 1 or len(request.files) < 1:
-            return "exactly 1 file required", 400
+        if access["admin"]:
+            if len(request.files) > 1 or len(request.files) < 1:
+                return "exactly 1 file required", 400
 
-        for _, f in request.files.items():
-            err = util.upload(f, fs, channel, access)
+            for _, f in request.files.items():
+                err = util.upload(f, fs, channel, access)
 
-            if err:
-                return err
+                if err:
+                    return err
 
-        return "success!", 200
-    else:
-        return "not authorized", 401
+            return "success!", 200
+        else:
+            return "not authorized", 401
+    except Exception as err:
+        print(err, flush=True)
+
+        return "internal server error", 500
 
 
 @server.route("/download", methods=["GET"])

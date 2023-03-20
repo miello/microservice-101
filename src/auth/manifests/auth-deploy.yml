@@ -25,10 +25,6 @@ spec:
       containers: 
         - name: auth
           image: partearth/ms-auth
-          resources:
-            limits:
-              memory: 512Mi
-              cpu: "1"
           ports:
             - containerPort: 5000
           envFrom:

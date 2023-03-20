@@ -10,7 +10,7 @@ def upload(f, fs: GridFS, channel, access):
     try:
         fid = fs.put(f)
     except Exception as err:
-        print(err)
+        print(err, flush=True)
         return "internal server error", 500
 
     message = {"video_fid": str(fid), "mp3_fid": None, "username": access["username"]}
@@ -24,7 +24,7 @@ def upload(f, fs: GridFS, channel, access):
             properties=pika.BasicProperties(delivery_mode=PERSISTENT_DELIVERY_MODE),
         )
     except Exception as err:
-        print(err)
+        print(err, flush=True)
 
         fs.delete(file_id=fid)
         return "internal server error", 500
