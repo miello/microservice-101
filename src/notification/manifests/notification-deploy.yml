@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: converter
+  name: notification
   labels:
-    app: converter
+    app: notification
 spec:
   replicas: 4
   selector:
     matchLabels:
-      app: converter
+      app: notification
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -16,13 +16,13 @@ spec:
   template:
     metadata:
       labels:
-        app: converter
+        app: notification
     spec:
       containers:
-        - name: converter
-          image: partearth/ms-converter:latest
+        - name: notification
+          image: partearth/ms-notification:latest
           envFrom:
             - configMapRef:
-                name: converter-configmap
+                name: notification-configmap
             - secretRef:
-                name: converter-secret
+                name: notification-secret

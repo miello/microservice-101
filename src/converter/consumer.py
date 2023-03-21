@@ -6,8 +6,8 @@ from convert import to_mp3
 
 def main():
     client = MongoClient(os.environ.get("MONGO_URI"))
-    db_video = client.videos
-    db_mp3s = client.mp3s
+    db_video = client[os.environ.get("VIDEO_QUEUE")]
+    db_mp3s = client[os.environ.get("MP3_QUEUE")]
 
     # gridfs
     fs_videos = gridfs.GridFS(db_video)
@@ -25,7 +25,7 @@ def main():
             else:
                 ch.basic_ack(delivery_tag=method.delivery_tag)
         except Exception as err:
-            print(err)
+            print(err, flush=True)
 
     channel.basic_consume(
         queue=os.environ.get("VIDEO_QUEUE"), on_message_callback=callback, auto_ack=True
